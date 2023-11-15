@@ -49,3 +49,14 @@ void printS(Stack *s){
 int sizeS(Stack *s){
   return  s->count;
 }
+
+datatype top(Stack **s)
+{
+  if(emptyS(*s)){
+    printf("Pila vacía");
+    exir(1);
+  }
+  int i = (*s) ->count;
+  datatype top = (*s) -> data[i-1];
+  return top;
+}
