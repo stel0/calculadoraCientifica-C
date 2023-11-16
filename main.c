@@ -10,7 +10,7 @@ int main(){
   {
 
     if (strlen(expresion_infija) != 0)
-      printf("Expresion: %s\n", expresion_infija);
+      printf("Expresión: %s\n", expresion_infija);
 
     menu();
     scanf("%d", &op);
@@ -28,7 +28,8 @@ int main(){
         exit(0);
       default:
         printf("Opción inválida\n");
-        *expresion_infija = '\0';//vaciar
+        op = 0;
+        break;
     }//fin switch
 
   }//fin while

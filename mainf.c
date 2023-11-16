@@ -24,22 +24,43 @@ int comparar(char top, char operando_expresion){
   int precedencia_top;
 
   switch (operando_expresion){
-    case '+': case '-':
+    case '+': 
       precedencia_expresion = 0;
-    case '*': case '/':
+      break;
+    case '-':
+      precedencia_expresion = 0;
+      break;
+    case '*': 
       precedencia_expresion = 1;
+      break;
+    case '/':
+      precedencia_expresion = 1;
+      break;
     case '^':
       precedencia_expresion = 2;
+      break;
   }
 
   switch (top){
-    case '+': case '-':
+    case '+': 
       precedencia_top = 0;
-    case '*': case '/':
+      break;
+    case '-':
+      precedencia_top = 0;
+      break;
+    case '*': 
       precedencia_top = 1;
+      break;
+    case '/':
+      precedencia_top = 1;
+      break;
     case '^':
       precedencia_top = 2;
-  }
+      break;
+  } 
+
+  printf("precedencia_expresion: %d\n", precedencia_expresion);
+  printf("precedencia_top: %d\n", precedencia_top);
 
   if (precedencia_expresion > precedencia_top)
     return 1;
@@ -60,7 +81,7 @@ char* convertir_a_postfija(char * expresion_infija){
       buffer_postfija[contador_postfijo++] = *expresion_infija;//se guarda en el buffer
     }//fin if
 
-    else if ( is_operator(*expresion_infija) ){//si es operador 
+    else if ( is_operator(*expresion_infija) ){//si es operador algebraico
 
       if (emptyS(p)){//si la pila esta vacia
         insertS(&p, expresion_infija);//meter el primer operador a la pila
@@ -68,8 +89,8 @@ char* convertir_a_postfija(char * expresion_infija){
 
       else{
 
-        //mientras el operador leído sea de menor o igual precedencia que el tope de la pila
-        //y la pila no esté vacía
+        //mientras la pila no esté vacía
+        //y el operador leído sea de menor o igual precedencia que el tope de la pila
         while(!emptyS(p) && !(comparar(top(p), *expresion_infija))){
           //sacar el tope de la pila y volver a comparar el operador leido
           buffer_postfija[contador_postfijo++] = removeS(&p);
@@ -77,9 +98,8 @@ char* convertir_a_postfija(char * expresion_infija){
         
         //si la pila esta vacía o el operador leído es de mayor precedencia
         //que el tope de la pila, meter a la pila 
-        if (emptyS(p) || comparar(top(p), *expresion_infija)){
+        if (emptyS(p) || comparar(top(p), *expresion_infija))
           insertS(&p, expresion_infija);
-      }//fin if
 
       }//fin else
 
@@ -92,6 +112,7 @@ char* convertir_a_postfija(char * expresion_infija){
     while (!emptyS(p)){//mientras la pila no esté vacia
       buffer_postfija[contador_postfijo++] = removeS(&p);
     }
+
     buffer_postfija[contador_postfijo]='\0';//terminar la cadena
     printf("Expresion Postfija: %s\n", buffer_postfija);
 }
