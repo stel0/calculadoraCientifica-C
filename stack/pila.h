@@ -17,3 +17,4 @@ int emptyS(Stack *s);
 int fullS(Stack *s);
 int sizeS(Stack *s);
 Stack *createS();
+datatype top(Stack *s);

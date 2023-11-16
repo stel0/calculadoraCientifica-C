@@ -2,24 +2,36 @@
 #include "stack/pila.h"
 
 int main(){
-  char exp[SIZE - 1];
+  char expresion_infija[SIZE - 1];
   int op = 0;
+  *expresion_infija = '\0';//vaciar residuos en memoria
 
-  while (1)
+  while (op != 3)
   {
-    if (strlen(exp) != 0)
-      printf("Expresion: %s\n", exp);
+
+    if (strlen(expresion_infija) != 0)
+      printf("Expresion: %s\n", expresion_infija);
+
     menu();
     scanf("%d", &op);
+
     switch(op){
       case 1:
-        scanf("%s", exp);
+        scanf("%s", expresion_infija);
+        //controlar que la sintaxis sea válida
         break;
       case 2:
-        calcular(&exp);
+        char * expresion_postfija = convertir_a_postfija(expresion_infija);
+        calcular(expresion_postfija);
         break;
       case 3:
         exit(0);
-    }
-  }  
-}
+      default:
+        printf("Opción inválida\n");
+        *expresion_infija = '\0';//vaciar
+    }//fin switch
+
+  }//fin while
+
+  return 0;
+}//fin main
