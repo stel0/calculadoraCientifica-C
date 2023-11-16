@@ -24,16 +24,10 @@ int comparar(char top, char operando_expresion){
   int precedencia_top;
 
   switch (operando_expresion){
-    case '+': 
+    case '+': case '-':
       precedencia_expresion = 0;
       break;
-    case '-':
-      precedencia_expresion = 0;
-      break;
-    case '*': 
-      precedencia_expresion = 1;
-      break;
-    case '/':
+    case '*': case '/':
       precedencia_expresion = 1;
       break;
     case '^':
@@ -42,25 +36,16 @@ int comparar(char top, char operando_expresion){
   }
 
   switch (top){
-    case '+': 
+    case '+': case '-':
       precedencia_top = 0;
       break;
-    case '-':
-      precedencia_top = 0;
-      break;
-    case '*': 
-      precedencia_top = 1;
-      break;
-    case '/':
+    case '*': case '/':
       precedencia_top = 1;
       break;
     case '^':
       precedencia_top = 2;
       break;
   } 
-
-  printf("precedencia_expresion: %d\n", precedencia_expresion);
-  printf("precedencia_top: %d\n", precedencia_top);
 
   if (precedencia_expresion > precedencia_top)
     return 1;
