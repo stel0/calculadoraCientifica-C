@@ -65,8 +65,8 @@ char* convertir_a_postfija(char * expresion_infija){
     while (*expresion_infija >= '0' && *expresion_infija <= '9'){//si es un operando
       buffer_postfija[contador_postfijo++] = *expresion_infija++;//se guarda en el buffer
     }//fin if
-
-    buffer_postfija[contador_postfijo++] = ' ';
+			//probar *expesion_infija--; por si sea un doble avance en el mismo ciclo lo que causa el problema de desapilamiento incorrecto al final de la expresión 
+    buffer_postfija[contador_postfijo++] = ' ';//se separan los operandos con espacios
 
     if (*expresion_infija == '('){//si es un caracter de inicio de agrupación
       insertS(&p, expresion_infija);//meter el caracter de agrupación a la pila
@@ -82,6 +82,7 @@ char* convertir_a_postfija(char * expresion_infija){
 
 
       //acá está el problema del paréntesis 
+			 //probar agregar !emptyS(p) && en el while par no revisar el top si la pila está vacía 
       while (top(p) != '('){//mientras el tope de la pila no sea el inicio de agrupación
         //cargar los operadores al buffer y sacarlos  de la pila
         buffer_postfija[contador_postfijo++] = removeS(&p);
