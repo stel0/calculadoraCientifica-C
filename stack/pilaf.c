@@ -7,19 +7,14 @@ Stack * createS(){
   return s;
 }
 
-int fullS(Stack * s){
-  return s->count == SIZE;
-}
+
 
 int emptyS(Stack *s){
   return s->count == 0;//retorna 1 si la pila esta vacia
 }
 
 void insertS(Stack ** s, datatype * x){
-  if(fullS(*s)){
-    printf("La pila esta llena, no se puede agregar más (insertS)\n");
-    exit(1);
-  }
+
   int i = (*s)->count;
   (*s)->data[i] =  *x;
   (*s)->count++;//incrementa la cantidad de elementos
@@ -42,8 +37,9 @@ datatype removeS(Stack **s)
 void printS(Stack *s){
   int i;
   for(i=0;i<s->count;i++){
-    printf("%c->",s->data[i]);
+    printf("%c-> ",s->data[i]);
   }
+  printf("\n");
 }
 
 int sizeS(Stack *s){

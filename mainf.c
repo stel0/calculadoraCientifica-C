@@ -62,9 +62,33 @@ char* convertir_a_postfija(char * expresion_infija){
 
   while (*expresion_infija != '\0'){
 
-    if (*expresion_infija >= '0' && *expresion_infija <= '9'){//si es un operando
-      buffer_postfija[contador_postfijo++] = *expresion_infija;//se guarda en el buffer
+    while (*expresion_infija >= '0' && *expresion_infija <= '9'){//si es un operando
+      buffer_postfija[contador_postfijo++] = *expresion_infija++;//se guarda en el buffer
     }//fin if
+
+    buffer_postfija[contador_postfijo++] = ' ';
+
+    if (*expresion_infija == '('){//si es un caracter de inicio de agrupación
+      insertS(&p, expresion_infija);//meter el caracter de agrupación a la pila
+      
+    }//fin else if
+
+    else if (*expresion_infija == ')'){//si es un caracter de fin de agrupación
+
+      if (emptyS(p)){//si la pila esta vacia
+        printf("Expresión inválida\n");
+        exit(1);
+      }//fin if 
+
+
+      //acá está el problema del paréntesis 
+      while (top(p) != '('){//mientras el tope de la pila no sea el inicio de agrupación
+        //cargar los operadores al buffer y sacarlos  de la pila
+        buffer_postfija[contador_postfijo++] = removeS(&p);
+      }//fin while
+
+      removeS(&p);//sacar el '(' de la pila
+    }//fin else if
 
     else if ( is_operator(*expresion_infija) ){//si es operador algebraico
 
@@ -91,6 +115,7 @@ char* convertir_a_postfija(char * expresion_infija){
     }//fin else if
 
       *expresion_infija++;//avanzar la expresión
+      printS(p);
     }//fin while 
 
     //al evaluar toda la expresión, sacar todos los elementos de la pila
