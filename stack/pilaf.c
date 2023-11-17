@@ -16,8 +16,14 @@ int emptyS(Stack *s){
 void insertS(Stack ** s, datatype * x){
 
   int i = (*s)->count;
-  (*s)->data[i] =  *x;
-  (*s)->count++;//incrementa la cantidad de elementos
+  
+  //no insertar caracter de fin de línea 
+  //(puede solucionarse el problema en el flujo de la función en vez de acá?)
+  if (*x != '\0'){
+    (*s)->data[i] =  *x;
+    (*s)->count++;//incrementa la cantidad de elementos
+  }
+
   return;
 }
 

@@ -45,6 +45,8 @@ int comparar(char top, char operando_expresion){
     case '^':
       precedencia_top = 2;
       break;
+    case '(':
+      precedencia_top = -1;//siempre agregar a la pila operadores a la derecha de parentesis
   } 
 
   if (precedencia_expresion > precedencia_top)
@@ -65,16 +67,16 @@ char* convertir_a_postfija(char * expresion_infija){
     while (*expresion_infija >= '0' && *expresion_infija <= '9'){//si es un operando
       buffer_postfija[contador_postfijo++] = *expresion_infija++;//se guarda en el buffer
     }//fin if
-			//probar *expesion_infija--; por si sea un doble avance en el mismo ciclo lo que causa el problema de desapilamiento incorrecto al final de la expresión 
+
     buffer_postfija[contador_postfijo++] = ' ';//se separan los operandos con espacios
 
     if (*expresion_infija == '('){//si es un caracter de inicio de agrupación
       insertS(&p, expresion_infija);//meter el caracter de agrupación a la pila
-      
     }//fin else if
 
     else if (*expresion_infija == ')'){//si es un caracter de fin de agrupación
 
+      //este if de acá no estoy seguro de que sea uy útil, para validar la entrada capaz
       if (emptyS(p)){//si la pila esta vacia
         printf("Expresión inválida\n");
         exit(1);
@@ -82,8 +84,8 @@ char* convertir_a_postfija(char * expresion_infija){
 
 
       //acá está el problema del paréntesis 
-			 //probar agregar !emptyS(p) && en el while par no revisar el top si la pila está vacía 
-      while (top(p) != '('){//mientras el tope de la pila no sea el inicio de agrupación
+			//probar agregar !emptyS(p) && en el while par no revisar el top si la pila está vacía 
+      while (!emptyS(p) && top(p) != '('){//mientras el tope de la pila no sea el inicio de agrupación
         //cargar los operadores al buffer y sacarlos  de la pila
         buffer_postfija[contador_postfijo++] = removeS(&p);
       }//fin while
@@ -93,8 +95,9 @@ char* convertir_a_postfija(char * expresion_infija){
 
     else if ( is_operator(*expresion_infija) ){//si es operador algebraico
 
-      if (emptyS(p)){//si la pila esta vacia
+      if (emptyS(p) && *expresion_infija != '\0'){//si la pila esta vacia
         insertS(&p, expresion_infija);//meter el primer operador a la pila
+        printf("Se inserta %c\n", *expresion_infija);
       }//fin if
 
       else{
@@ -110,6 +113,7 @@ char* convertir_a_postfija(char * expresion_infija){
         //que el tope de la pila, meter a la pila 
         if (emptyS(p) || comparar(top(p), *expresion_infija))
           insertS(&p, expresion_infija);
+          printf("Se inserta %c\n", *expresion_infija);
 
       }//fin else
 
@@ -122,6 +126,7 @@ char* convertir_a_postfija(char * expresion_infija){
     //al evaluar toda la expresión, sacar todos los elementos de la pila
     while (!emptyS(p)){//mientras la pila no esté vacia
       buffer_postfija[contador_postfijo++] = removeS(&p);
+      printS(p);
     }
 
     buffer_postfija[contador_postfijo]='\0';//terminar la cadena
