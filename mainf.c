@@ -5,12 +5,16 @@ void menu()
 {
   printf("1. Ingresar expresion\n");
   printf("2. Calcular\n");
-  printf("3. Salir\n");
+  printf("3. Cambiar sistema angular\n");
+  printf("4. Salir\n");
 }
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+void menu_angulos(){
+  printf("Sistema angular\n");
+  printf("1. Grados\n");
+  printf("2. Radianes\n");
+  printf("3. No realizar cambios\n");
+}
 
 char * log_or_trigo(char *str)
 {
@@ -21,14 +25,16 @@ char * log_or_trigo(char *str)
   
   while (*str >= 'a' && *str <= 'z')
   {
-    strncat(word, str, 1); // copiamos cada caracter para saber a que función pertenece
+    strncat(word, str, 1); // copiamos cada caracter para saber a que función pertenece i.e. log() o sin()
     str++;
-  }
-  str++;
+  }//sale del while al encontrar el primer paréntesis '('
+  str++;//se avanza al primer número en la expresión
 
   // convertir de letras a enteros
   while (*str != ')')
   {
+    //(res*10) define el orden del entero a convertir
+    //(*str - '0') convierte un caracter numérico ASCII a un entero 
     res = (res * 10) + (*str - '0');
     str++;
   }
@@ -37,23 +43,42 @@ char * log_or_trigo(char *str)
     res = log(res);
   else if (strcmp(word, "log") == 0)
     res = log10(res);
-  else if (strcmp(word, "sin") == 0)
-    res = sin(res * pi / 180.0);
-  else if (strcmp(word, "cos") == 0)
-    res = cos(res * pi / 180.0);
-  else if (strcmp(word, "tan") == 0){
-    res = tan(res * pi / 180.0);
-  }
+  
+  //no se hace la operación res = res * pi / 180.0 porque 
+  //la precisión de los números en los cálculos varía 
+  if (bandera_sistema_trigonometrico == 6){//para cálculos en grados
+
+  // [res * pi / 180.0] convierte 'res' grados sexagesimales a radianes
+    if (strcmp(word, "sin") == 0)
+      res = sin(res * pi / 180.0);
+    else if (strcmp(word, "cos") == 0)
+      res = cos(res * pi / 180.0);
+    else if (strcmp(word, "tan") == 0){
+      res = tan(res * pi / 180.0);
+    }
+    
+  }//fin de if
+
+  else if (bandera_sistema_trigonometrico == 3){//para cálculos en radianes
+
+    if (strcmp(word, "sin") == 0)
+      res = sin(res);
+    else if (strcmp(word, "cos") == 0)
+      res = cos(res);
+    else if (strcmp(word, "tan") == 0)
+      res = tan(res);
+
+  }//fin de else if
 
   // convertir de enteros a letras y guardamos en word
-  sprintf(word,"%.2f",res);
+  sprintf(word,"%.2f",res);//por qué esta cantidad de decimales?
   
   return word; 
 }
 
 void limpiar_pantalla()
 {
-#ifdef _WIN32
+#ifdef _WIN32//solo para SO windows
   system("cls");
 #else
   system("clear");
@@ -188,7 +213,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
         res++;                                     // avanzamos el puntero
       }
       while(*expresion_infija != ')'){
-        expresion_infija++; // avanzamos el puntero de expresion infija hasta el final de sen, cos, tan, ln o log
+        expresion_infija++; // avanzamos el puntero de expresion infija hasta el final de sen(), cos(), tan(), ln() o log()
       }
     }
     *expresion_infija++; // avanzar la expresión
