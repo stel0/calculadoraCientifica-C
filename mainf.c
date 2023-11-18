@@ -7,8 +7,21 @@ void menu(){
     printf("3. Salir\n");
 }
 
+#ifdef _WIN32
+#include<windows.h>
+#endif
+
+void limpiar_pantalla()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 int is_operator(char c){
-  char *operadores_algebraicos = "+-*^/";
+  char *operadores_algebraicos = "+-*^/(";
 
   if (strchr(operadores_algebraicos, c) != NULL)
     return 1;
@@ -33,6 +46,8 @@ int comparar(char top, char operando_expresion){
     case '^':
       precedencia_expresion = 2;
       break;
+    case '(':
+      precedencia_expresion = 3; //siempre meter a la pila el paréntesis abierto
   }
 
   switch (top){
@@ -57,9 +72,8 @@ int comparar(char top, char operando_expresion){
 
 }
 
-char* convertir_a_postfija(char * expresion_infija){
+char* convertir_a_postfija(char * expresion_infija, char * buffer_postfija){
   Stack * p = createS();
-  char buffer_postfija [SIZE];
   int contador_postfijo = 0;//cantidad de elementos en el buffer
 
   while (*expresion_infija != '\0'){
@@ -70,21 +84,13 @@ char* convertir_a_postfija(char * expresion_infija){
 
     buffer_postfija[contador_postfijo++] = ' ';//se separan los operandos con espacios
 
-    if (*expresion_infija == '('){//si es un caracter de inicio de agrupación
-      insertS(&p, expresion_infija);//meter el caracter de agrupación a la pila
-    }//fin else if
-
-    else if (*expresion_infija == ')'){//si es un caracter de fin de agrupación
+    if (*expresion_infija == ')'){//si es un caracter de fin de agrupación
 
       //este if de acá no estoy seguro de que sea uy útil, para validar la entrada capaz
       if (emptyS(p)){//si la pila esta vacia
-        printf("Expresión inválida\n");
         exit(1);
       }//fin if 
 
-
-      //acá está el problema del paréntesis 
-			//probar agregar !emptyS(p) && en el while par no revisar el top si la pila está vacía 
       while (!emptyS(p) && top(p) != '('){//mientras el tope de la pila no sea el inicio de agrupación
         //cargar los operadores al buffer y sacarlos  de la pila
         buffer_postfija[contador_postfijo++] = removeS(&p);
@@ -97,7 +103,6 @@ char* convertir_a_postfija(char * expresion_infija){
 
       if (emptyS(p) && *expresion_infija != '\0'){//si la pila esta vacia
         insertS(&p, expresion_infija);//meter el primer operador a la pila
-        printf("Se inserta %c\n", *expresion_infija);
       }//fin if
 
       else{
@@ -113,24 +118,22 @@ char* convertir_a_postfija(char * expresion_infija){
         //que el tope de la pila, meter a la pila 
         if (emptyS(p) || comparar(top(p), *expresion_infija))
           insertS(&p, expresion_infija);
-          printf("Se inserta %c\n", *expresion_infija);
 
       }//fin else
 
     }//fin else if
 
       *expresion_infija++;//avanzar la expresión
-      printS(p);
     }//fin while 
 
     //al evaluar toda la expresión, sacar todos los elementos de la pila
     while (!emptyS(p)){//mientras la pila no esté vacia
       buffer_postfija[contador_postfijo++] = removeS(&p);
-      printS(p);
     }
 
     buffer_postfija[contador_postfijo]='\0';//terminar la cadena
-    printf("Expresion Postfija: %s\n", buffer_postfija);
+    free(p);//liberar memoria asignada a la pila
+    return buffer_postfija;
 }
 
 void calcular (char * expresion_postfija){

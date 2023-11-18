@@ -3,7 +3,6 @@
 Stack * createS(){
   Stack * s = (Stack *)malloc(sizeof(Stack));
   s -> count = 0;
-  printf("Pila creada\n");
   return s;
 }
 
