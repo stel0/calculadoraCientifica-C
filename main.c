@@ -23,7 +23,7 @@ int main(){
 
         switch(op){
             case 1:
-                limpiar_pantalla();//limpiar terminal para no tener operaciones acumuladas
+                limpiar_pantalla() ;//limpiar terminal para no tener operaciones acumuladas
                 printf("Ingrese la expresión infija: ");
                 scanf("%s", expresion_infija); // Tener en cuenta el posible desbordamiento
                 memset(expresion_postfija, '\0', SIZE);//vaciar la cadena
