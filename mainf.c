@@ -9,76 +9,80 @@ void menu()
   printf("4. Salir\n");
 }
 
-void menu_angulos(){
+void menu_angulos()
+{
   printf("Sistema angular\n");
   printf("1. Grados\n");
   printf("2. Radianes\n");
   printf("3. No realizar cambios\n");
 }
 
-char * log_or_trigo(char *str)
+char *log_or_trigo(char *str)
 {
   double res = 0; // Resultado
   float pi = 3.141592653589793;
-  static char word[10]; // un auxiliar mas
-  memset(word, 0, sizeof(word)); // Inicializa el arreglo word con '\0'
-  
+  static char aux[10];         // un auxiliar mas
+  memset(aux, 0, sizeof(aux)); // Inicializa el arreglo aux con '\0'
+
   while (*str >= 'a' && *str <= 'z')
   {
-    strncat(word, str, 1); // copiamos cada caracter para saber a que función pertenece i.e. log() o sin()
+    strncat(aux, str, 1); // copiamos cada caracter para saber a que función pertenece i.e. log() o sin()
     str++;
-  }//sale del while al encontrar el primer paréntesis '('
-  str++;//se avanza al primer número en la expresión
+  }      // sale del while al encontrar el primer paréntesis '('
+  str++; // se avanza al primer número en la expresión
 
   // convertir de letras a enteros
   while (*str != ')')
   {
     //(res*10) define el orden del entero a convertir
-    //(*str - '0') convierte un caracter numérico ASCII a un entero 
+    //(*str - '0') convierte un caracter numérico ASCII a un entero
     res = (res * 10) + (*str - '0');
     str++;
   }
 
-  if (strcmp(word, "ln") == 0)
+  if (strcmp(aux, "ln") == 0){
     res = log(res);
-  else if (strcmp(word, "log") == 0)
+  }
+  else if (strcmp(aux, "log") == 0)
     res = log10(res);
-  
-  //no se hace la operación res = res * pi / 180.0 porque 
-  //la precisión de los números en los cálculos varía 
-  if (bandera_sistema_trigonometrico == 6){//para cálculos en grados
 
-  // [res * pi / 180.0] convierte 'res' grados sexagesimales a radianes
-    if (strcmp(word, "sin") == 0)
+  // la precisión de los números en los cálculos varía
+  if (bandera_sistema_trigonometrico == 6)
+  { // para cálculos en grados
+
+    // [res * pi / 180.0] convierte 'res' grados sexagesimales a radianes
+    if (strcmp(aux, "sin") == 0)
       res = sin(res * pi / 180.0);
-    else if (strcmp(word, "cos") == 0)
+    else if (strcmp(aux, "cos") == 0)
       res = cos(res * pi / 180.0);
-    else if (strcmp(word, "tan") == 0){
+    else if (strcmp(aux, "tan") == 0)
+    {
       res = tan(res * pi / 180.0);
     }
-    
-  }//fin de if
 
-  else if (bandera_sistema_trigonometrico == 3){//para cálculos en radianes
+  } // fin de if
 
-    if (strcmp(word, "sin") == 0)
+  else if (bandera_sistema_trigonometrico == 3)
+  { // para cálculos en radianes
+
+    if (strcmp(aux, "sin") == 0)
       res = sin(res);
-    else if (strcmp(word, "cos") == 0)
+    else if (strcmp(aux, "cos") == 0)
       res = cos(res);
-    else if (strcmp(word, "tan") == 0)
+    else if (strcmp(aux, "tan") == 0)
       res = tan(res);
 
-  }//fin de else if
+  } // fin de else if
 
-  // convertir de enteros a letras y guardamos en word
-  sprintf(word,"%.2f",res);//por qué esta cantidad de decimales?
-  
-  return word; 
+  // convertir de enteros a letras y guardamos en aux
+  sprintf(aux, "%.2f", res); // por qué esta cantidad de decimales?
+
+  return aux;
 }
 
 void limpiar_pantalla()
 {
-#ifdef _WIN32//solo para SO windows
+#ifdef _WIN32 // solo para SO windows
   system("cls");
 #else
   system("clear");
@@ -150,7 +154,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
   while (*expresion_infija != '\0')
   {
-
+    // si es un operando copia el operando al buffer
     while (*expresion_infija >= '0' && *expresion_infija <= '9')
     {                                                             // si es un operando
       buffer_postfija[contador_postfijo++] = *expresion_infija++; // se guarda en el buffer
@@ -158,8 +162,9 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
     buffer_postfija[contador_postfijo++] = ' '; // se separan los operandos con espacios
 
+    // si es un caracter de agrupación
     if (*expresion_infija == ')')
-    { // si es un caracter de fin de agrupación
+    {
 
       // este if de acá no estoy seguro de que sea uy útil, para validar la entrada capaz
       if (emptyS(p))
@@ -167,10 +172,10 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
         exit(1);
       } // fin if
 
-      while (!emptyS(p) && top(p) != '(')
-      { // mientras el tope de la pila no sea el inicio de agrupación
-        // cargar los operadores al buffer y sacarlos  de la pila
-        buffer_postfija[contador_postfijo++] = removeS(&p);
+      while (!emptyS(p) && top(p) != '(') // mientras el tope de la pila no sea el inicio de agrupación
+      {
+        buffer_postfija[contador_postfijo++] = removeS(&p); // cargar los operadores al buffer y sacarlos  de la pila
+        buffer_postfija[contador_postfijo++] = ' ';
       } // fin while
 
       removeS(&p); // sacar el '(' de la pila
@@ -193,6 +198,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
         {
           // sacar el tope de la pila y volver a comparar el operador leido
           buffer_postfija[contador_postfijo++] = removeS(&p);
+          buffer_postfija[contador_postfijo++] = ' ';
         } // fin while
 
         // si la pila esta vacía o el operador leído es de mayor precedencia
@@ -203,16 +209,19 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
     } // fin else if
 
-    //caso de seno, coseno, tangente o logaritmo
+    // caso de seno, coseno, tangente o logaritmo
     else if (*expresion_infija >= 'a' && *expresion_infija <= 'z') // si en la expresion hay una letra
     {
-      char * res = log_or_trigo(expresion_infija); // devuelve el valor de sen, cos, tan,ln o log en una cadena
-      while (*res != '\0') // mientras no se haya llegado al final
+      char *res = log_or_trigo(expresion_infija); // devuelve el valor de sen, cos, tan,ln o log en una cadena
+      while (*res != '\0')                        // mientras no se haya llegado al final
       {
         buffer_postfija[contador_postfijo++] = *res; // copiamos cada caracter de res al buffer
-        res++;                                     // avanzamos el puntero
+        res++;                                       // avanzamos el puntero
       }
-      while(*expresion_infija != ')'){
+      buffer_postfija[contador_postfijo++] = ' ';
+
+      while (*expresion_infija != ')')
+      {
         expresion_infija++; // avanzamos el puntero de expresion infija hasta el final de sen(), cos(), tan(), ln() o log()
       }
     }
@@ -223,6 +232,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
   while (!emptyS(p))
   { // mientras la pila no esté vacia
     buffer_postfija[contador_postfijo++] = removeS(&p);
+    buffer_postfija[contador_postfijo++] = ' ';
   }
 
   buffer_postfija[contador_postfijo] = '\0'; // terminar la cadena
@@ -232,4 +242,63 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
 void calcular(char *expresion_postfija)
 {
+  double operandos[strlen(expresion_postfija)]; // lista de operandos
+  int b; // bandera para saber si hay un numero negativo
+  int i = 0; // contador de operandos
+  char *eValue; // puntero que apunta al valor de la expresión
+  eValue = strtok(expresion_postfija, " "); // apunta al primer valor de la expresion postfija
+  /* strtok() coloca un NULL despues de la primera palabra, seguido del NULL le sigue la siguiente palabra que viene despues de la primera palabra  */
+  while (eValue != NULL) // eValue no es NULL
+  {
+    b = 0;
+    if (!is_operator(*eValue)) // si no es un operador 
+    {
+      operandos[i] = atof(eValue); // cargar en la lista
+      i++; // incrementar el contador
+    }
+    else 
+    {
+      // si es un operador hacer los calculos con la lista
+      switch (*eValue)
+      {
+      case '+':
+        operandos[i - 2] = operandos[i - 2] + operandos[i - 1];
+        break;
+
+      case '-':
+        if ((i-1) == 0) // si hay un solo elemento en la lista quiere decir que ese numero es negativo
+        {
+          operandos[i-1] = operandos[i-1] * (-1); // asignamos a ese numero el valor negativo
+          b = 1;
+        }else{
+          operandos[i - 2] = operandos[i - 2] - operandos[i - 1];
+        }
+        break;
+
+      case '*':
+        operandos[i - 2] = operandos[i - 2] * operandos[i - 1];
+        break;
+
+      case '/':
+        
+        operandos[i - 2] = operandos[i - 2] / operandos[i - 1];
+        break;
+
+      case '^':
+        operandos[i - 2] = pow(operandos[i - 2], operandos[i - 1]);
+        break;
+
+      default:
+        break;
+      }
+      // si no se ingreso un numero negativo
+      if(b != 1){
+        i = i - 1; // el indice se ubica despues del ultimo valor para poder ingresar en esa posicion el nuevo elemento
+      }
+    }
+    eValue = strtok(NULL, " "); //avanzamos el puntero al siguiente valor de expresion postfija
+    /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
+  }
+
+  printf("El resultado es: %f\n", operandos[0]); // imprime el resultado
 }
