@@ -29,7 +29,7 @@ int main()
         if (strlen(expresion_infija) != 0)
         {
             printf("Expresión ingresada: %s\n", expresion_infija);
-            printf("Expresión Postfija: %s\n", expresion_postfija); // borrar después
+            /* printf("Expresión Postfija: %s\n", expresion_postfija); */ // borrar después
         }
 
         menu();

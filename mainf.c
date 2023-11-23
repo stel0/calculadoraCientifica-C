@@ -21,7 +21,7 @@ char *log_or_trigo(char *str)
 {
   double res = 0; // Resultado
   float pi = 3.141592653589793;
-  static char aux[10];         // un auxiliar mas
+  static char aux[56];         // un auxiliar mas
   memset(aux, 0, sizeof(aux)); // Inicializa el arreglo aux con '\0'
 
   while (*str >= 'a' && *str <= 'z')
@@ -73,7 +73,6 @@ char *log_or_trigo(char *str)
       res = tan(res);
 
   } // fin de else if
-
   // convertir de enteros a letras y guardamos en aux
   sprintf(aux, "%.2f", res); // por qué esta cantidad de decimales?
 
@@ -154,8 +153,8 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
   while (*expresion_infija != '\0')
   {
-    // si es un operando copia el operando al buffer
-    while (*expresion_infija >= '0' && *expresion_infija <= '9')
+    // si es un operando copia el operando al buffer o si es un numero con coma
+    while (*expresion_infija >= '0' && *expresion_infija <= '9' || *expresion_infija == '.')
     {                                                             // si es un operando
       buffer_postfija[contador_postfijo++] = *expresion_infija++; // se guarda en el buffer
     }                                                             // fin if
@@ -237,6 +236,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
   buffer_postfija[contador_postfijo] = '\0'; // terminar la cadena
   free(p);                                   // liberar memoria asignada a la pila
+
   return buffer_postfija;
 }
 
@@ -248,7 +248,8 @@ void calcular(char *expresion_postfija)
   char *eValue; // puntero que apunta al valor de la expresión
   eValue = strtok(expresion_postfija, " "); // apunta al primer valor de la expresion postfija
   /* strtok() coloca un NULL despues de la primera palabra, seguido del NULL le sigue la siguiente palabra que viene despues de la primera palabra  */
-  while (eValue != NULL) // eValue no es NULL
+
+  while (eValue != NULL ) // eValue no es NULL
   {
     b = 0;
     if (!is_operator(*eValue)) // si no es un operador 
@@ -300,5 +301,5 @@ void calcular(char *expresion_postfija)
     /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
   }
 
-  printf("El resultado es: %f\n", operandos[0]); // imprime el resultado
+  printf("El resultado es: %lf\n", operandos[0]); // imprime el resultado
 }
