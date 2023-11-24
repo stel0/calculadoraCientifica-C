@@ -4,6 +4,7 @@
 int bandera_sistema_trigonometrico = 3; // 3 radianes 6 sexagesimales
 int main()
 {
+    double result = 0.0;
     char expresion_infija[SIZE];
     char expresion_postfija[SIZE];
     *expresion_infija = '\0'; // inicializar la cadena como vacía
@@ -28,7 +29,6 @@ int main()
         if (strlen(expresion_infija) != 0)
         {
             printf("Expresión ingresada: %s\n", expresion_infija);
-            /* printf("Expresión Postfija: %s\n", expresion_postfija); */ // borrar después
         }
 
         menu();
@@ -54,19 +54,26 @@ int main()
             limpiar_pantalla(); // limpiar terminal para no tener operaciones acumuladas
             if (strlen(expresion_infija) != 0)
             {
-                char *res = convertir_a_postfija(expresion_infija, expresion_postfija);
-                printf("Expresión Postfija: %s\n", expresion_postfija);
+                char *response = convertir_a_postfija(expresion_infija, expresion_postfija);
 
-                if (strcmp(res, "ERROR1") == 0){
+                if (strcmp(response, "ERROR1") == 0){
                     printf("\n\nError de sintaxis\n\n");
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
                 }
-                else if (strcmp(res, "ERROR2") == 0){
+                else if (strcmp(response, "ERROR2") == 0){
                     printf("\n\nError de cálculo\n\n");
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
                 }
-                else if (res != NULL ){
-                    calcular(expresion_postfija);
+                else if (response != NULL ){
+                    result = calcular(expresion_postfija);
+                    if (result)
+                    {
+                        printf("El resultado es: %.14lf\n", result); // imprime el resultado
+                    }else{
+                        printf("\n\nError de cálculo\n\n");
+                        memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
+                    }
+                    
                 } 
                 else{
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena

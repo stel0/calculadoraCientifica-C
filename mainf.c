@@ -115,20 +115,8 @@ char *log_or_trigo(char *str)
 
   } // fin de else if
 
-  
+  sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
 
-  if (res < 0){
-    res = res * -1;
-    memset(aux, 0, sizeof(aux));
-    // convertir de enteros a letras y guardamos en aux
-    sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
-    strcat(aux, " -");
-  }
-  else{
-    // convertir de enteros a letras y guardamos en aux
-    sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
-  }
-  
   return aux;
 }
 
@@ -308,7 +296,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
   return buffer_postfija;
 }
 
-void calcular(char *expresion_postfija)
+double calcular(char *expresion_postfija)
 {
   double operandos[strlen(expresion_postfija)]; // lista de operandos
   operandos[strlen(expresion_postfija)] = '\0';//inicializar la pila vacía
@@ -320,11 +308,11 @@ void calcular(char *expresion_postfija)
 
   while (eValue != NULL ) // eValue no es NULL
   {
-    printf("->%s\n", eValue);
     b = 0;
-    if (!is_operator(*eValue)) // si no es un operador 
+    if (!is_operator(*eValue) || strlen(eValue) > 1) // si no es un operador 
     {
-      operandos[i] = atof(eValue); // cargar en la lista
+      operandos[i] = strtod(eValue, NULL); // cargar en la lista
+      /*strtod() el primer parametro es el valor de la cadena, el segundo es un doble puntero al final del valor de la cadena por ejemplo "123 name" , strtod() devuelve 123.0 y el doble puntero a " name"*/
       i++; // incrementar el contador
     }
     else 
@@ -351,8 +339,12 @@ void calcular(char *expresion_postfija)
         break;
 
       case '/':
-        
-        operandos[i - 2] = operandos[i - 2] / operandos[i - 1];
+        if (operandos[i - 1]==0){ // si el denominador es cero entonces devolver error
+          eValue = NULL;
+          return 0;
+        }
+        else
+          operandos[i - 2] = operandos[i - 2] / operandos[i - 1];
         break;
 
       case '^':
@@ -370,7 +362,5 @@ void calcular(char *expresion_postfija)
     eValue = strtok(NULL, " "); //avanzamos el puntero al siguiente valor de expresion postfija
     /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
   }
-  printf("\n");
-  printf("El resultado es: %lf\n", operandos[0]); // imprime el resultado
-  //printf("\n");
+  return operandos[0];
 }
