@@ -3,6 +3,7 @@
 
 void menu()
 {
+  printf("\nMenu\n");
   printf("1. Ingresar expresion\n");
   printf("2. Calcular\n");
   printf("3. Cambiar sistema angular\n");
@@ -20,16 +21,23 @@ void menu_angulos()
 char *log_or_trigo(char *str)
 {
   double res = 0; // Resultado
-  float pi = 3.141592653589793;
-  static char aux[56];         // un auxiliar mas
+  double pi = 3.141592653589793;
+  static char aux[20];         // un auxiliar mas
   memset(aux, 0, sizeof(aux)); // Inicializa el arreglo aux con '\0'
 
   while (*str >= 'a' && *str <= 'z')
   {
-    strncat(aux, str, 1); // copiamos cada caracter para saber a que función pertenece i.e. log() o sin()
+    strncat(aux, str, 1); // copiamos cada caracter para saber a que función pertenece i.e. log, sin o sqrt
     str++;
   }      // sale del while al encontrar el primer paréntesis '('
-  str++; // se avanza al primer número en la expresión
+
+  if (*str != '(') // si no hay paréntesis '(' antes del valor a operar i.e. log10) o tan87)
+  {
+    static char error[] = "ERROR1\0";
+    return error;
+  }
+  else
+    str++; // se avanza al primer número en la expresión
 
   // convertir de letras a enteros
   while (*str != ')')
@@ -38,26 +46,55 @@ char *log_or_trigo(char *str)
     //(*str - '0') convierte un caracter numérico ASCII a un entero
     res = (res * 10) + (*str - '0');
     str++;
+    if (*str == '('){
+      static char error[] = "ERROR1\0";
+      return error;
+    }
   }
 
-  if (strcmp(aux, "ln") == 0){
+  if (strcmp(aux, "sqrt") == 0){
+    if (res < 0){
+      static char error[] = "ERROR2\0";
+      return error;
+    }
+    else
+      res = sqrt(res);
+  }
+  
+
+  else if (strcmp(aux, "ln") == 0){
     res = log(res);
   }
+
   else if (strcmp(aux, "log") == 0)
     res = log10(res);
 
   // la precisión de los números en los cálculos varía
-  if (bandera_sistema_trigonometrico == 6)
-  { // para cálculos en grados
+  else if (bandera_sistema_trigonometrico == 6){ // para cálculos en grados
 
     // [res * pi / 180.0] convierte 'res' grados sexagesimales a radianes
-    if (strcmp(aux, "sin") == 0)
+    // las funciones trigonométricas de math.h operan en ese sistema
+    if (strcmp(aux, "sin") == 0){
       res = sin(res * pi / 180.0);
-    else if (strcmp(aux, "cos") == 0)
+    }
+
+    else if (strcmp(aux, "cos") == 0){
       res = cos(res * pi / 180.0);
-    else if (strcmp(aux, "tan") == 0)
-    {
-      res = tan(res * pi / 180.0);
+    }
+
+    else if (strcmp(aux, "tan") == 0){
+
+      if (res == 90 || res == 270){
+        static char error[] = "ERROR2\0";
+        return error;
+      }
+      
+      else
+        res = tan(res * pi / 180.0);
+    }
+    else{
+      static char error[] = "ERROR1\0";
+      return error;
     }
 
   } // fin de if
@@ -71,11 +108,17 @@ char *log_or_trigo(char *str)
       res = cos(res);
     else if (strcmp(aux, "tan") == 0)
       res = tan(res);
+    else{
+      static char error[] = "ERROR1\0";
+      return error;
+    }
 
   } // fin de else if
-  // convertir de enteros a letras y guardamos en aux
-  sprintf(aux, "%.2f", res); // por qué esta cantidad de decimales?
 
+
+
+  // convertir de enteros a letras y guardamos en aux
+  sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
   return aux;
 }
 
@@ -165,20 +208,22 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
     if (*expresion_infija == ')')
     {
 
-      // este if de acá no estoy seguro de que sea uy útil, para validar la entrada capaz
-      if (emptyS(p))
-      { // si la pila esta vacia
-        exit(1);
-      } // fin if
-
       while (!emptyS(p) && top(p) != '(') // mientras el tope de la pila no sea el inicio de agrupación
       {
         buffer_postfija[contador_postfijo++] = removeS(&p); // cargar los operadores al buffer y sacarlos  de la pila
         buffer_postfija[contador_postfijo++] = ' ';
       } // fin while
 
-      removeS(&p); // sacar el '(' de la pila
-    }              // fin else if
+      // para validar la entrada
+      if (emptyS(p)){ // si la pila esta vacia
+        static char error[] = "ERROR1\0";
+        return error;
+      } // fin if
+
+      else
+        removeS(&p); // sacar el '(' de la pila
+
+    }              // fin else 
 
     else if (is_operator(*expresion_infija))
     { // si es operador algebraico
@@ -212,6 +257,14 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
     else if (*expresion_infija >= 'a' && *expresion_infija <= 'z') // si en la expresion hay una letra
     {
       char *res = log_or_trigo(expresion_infija); // devuelve el valor de sen, cos, tan,ln o log en una cadena
+      if (strcmp(res, "ERROR1") == 0){
+        static char error[] = "ERROR1\0";
+        return error; 
+      }
+      else if (strcmp(res, "ERROR2") == 0){
+        static char error[] = "ERROR2\0";
+        return error; 
+      }
       while (*res != '\0')                        // mientras no se haya llegado al final
       {
         buffer_postfija[contador_postfijo++] = *res; // copiamos cada caracter de res al buffer
@@ -230,8 +283,13 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
   // al evaluar toda la expresión, sacar todos los elementos de la pila
   while (!emptyS(p))
   { // mientras la pila no esté vacia
-    buffer_postfija[contador_postfijo++] = removeS(&p);
-    buffer_postfija[contador_postfijo++] = ' ';
+
+    if(top(p) == '('){//si son parentesis
+      removeS(&p);//sacar de la pila
+    }
+      buffer_postfija[contador_postfijo++] = removeS(&p);
+      buffer_postfija[contador_postfijo++] = ' ';
+
   }
 
   buffer_postfija[contador_postfijo] = '\0'; // terminar la cadena
@@ -243,6 +301,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 void calcular(char *expresion_postfija)
 {
   double operandos[strlen(expresion_postfija)]; // lista de operandos
+  operandos[strlen(expresion_postfija)] = '\0';//inicializar la pila vacía
   int b; // bandera para saber si hay un numero negativo
   int i = 0; // contador de operandos
   char *eValue; // puntero que apunta al valor de la expresión
@@ -300,6 +359,7 @@ void calcular(char *expresion_postfija)
     eValue = strtok(NULL, " "); //avanzamos el puntero al siguiente valor de expresion postfija
     /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
   }
-
+  printf("\n");
   printf("El resultado es: %lf\n", operandos[0]); // imprime el resultado
+  //printf("\n");
 }

@@ -30,7 +30,7 @@ datatype removeS(Stack **s)
 {
  /*  printf("\npila.lon = %ld\n",sizeS(*s)); */
   if(emptyS(*s)){
-    printf("La pila esta vacia, no se puede eliminar nada\n");
+    printf("La pila esta vacia, no se puede eliminar\n");
     exit(1);
   }
   /* printf("\ncount - 1 = %ld\n",((*s)->count)-1); */

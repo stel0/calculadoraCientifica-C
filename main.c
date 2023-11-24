@@ -6,17 +6,16 @@ int main()
 {
     char expresion_infija[SIZE];
     char expresion_postfija[SIZE];
+    *expresion_infija = '\0'; // inicializar la cadena como vacía
+    memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
 
     int op = 0;               // opción del menu
     int op_trig = 0;          // opción de sistema trigonometrico
-    *expresion_infija = '\0'; // inicializar la cadena como vacía
-
-    memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
 
     while (op != 4)
     {
 
-        printf("Calculando en ");
+        printf("\nCalculando en ");
         if (bandera_sistema_trigonometrico == 3)
         {
             printf("radianes\n");
@@ -55,16 +54,31 @@ int main()
             limpiar_pantalla(); // limpiar terminal para no tener operaciones acumuladas
             if (strlen(expresion_infija) != 0)
             {
-                char * res = convertir_a_postfija(expresion_infija, expresion_postfija);
-                if (res != NULL)
-                    calcular(expresion_postfija);
-                else
+                char *res = convertir_a_postfija(expresion_infija, expresion_postfija);
+                printf("Resultado:%s\n",res);
+                if (strcmp(res, "ERROR1") == 0){
+                    printf("\n\nError de sintaxis\n\n");
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
+                }
+                else if (strcmp(res, "ERROR2") == 0){
+                    printf("\n\nError de cálculo\n\n");
+                    memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
+                }
+                else if (res != NULL ){
+                    //calcular(expresion_postfija);
+                }
+                    
+                else{
+                    memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
+                }
+                    
             }
+
             else
             {
-                printf("No se ha ingresado ninguna expresión.\n");
+                printf("\nNo se ha ingresado una expresión.\n");
             }
+            
             break;
         case 3:
             limpiar_pantalla(); // limpiar terminal para no tener operaciones acumuladas
