@@ -115,10 +115,20 @@ char *log_or_trigo(char *str)
 
   } // fin de else if
 
+  
 
-
-  // convertir de enteros a letras y guardamos en aux
-  sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
+  if (res < 0){
+    res = res * -1;
+    memset(aux, 0, sizeof(aux));
+    // convertir de enteros a letras y guardamos en aux
+    sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
+    strcat(aux, " -");
+  }
+  else{
+    // convertir de enteros a letras y guardamos en aux
+    sprintf(aux, "%.14f", res); // precisión aproximada de tipo de dato double
+  }
+  
   return aux;
 }
 
@@ -310,6 +320,7 @@ void calcular(char *expresion_postfija)
 
   while (eValue != NULL ) // eValue no es NULL
   {
+    printf("->%s\n", eValue);
     b = 0;
     if (!is_operator(*eValue)) // si no es un operador 
     {

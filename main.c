@@ -46,7 +46,7 @@ int main()
         case 1:
             limpiar_pantalla();  // limpiar terminal para no tener operaciones acumuladas
             printf("Ingrese la expresión infija: ");
-            scanf("%s", expresion_infija);          // Tener en cuenta el posible desbordamiento
+            scanf("%255s", expresion_infija); //limite de 255 caracteres
             // Controlar sintaxis válida de la expresión
             break;
         case 2:
@@ -55,7 +55,8 @@ int main()
             if (strlen(expresion_infija) != 0)
             {
                 char *res = convertir_a_postfija(expresion_infija, expresion_postfija);
-                printf("Resultado:%s\n",res);
+                printf("Expresión Postfija: %s\n", expresion_postfija);
+
                 if (strcmp(res, "ERROR1") == 0){
                     printf("\n\nError de sintaxis\n\n");
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
@@ -65,9 +66,8 @@ int main()
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
                 }
                 else if (res != NULL ){
-                    //calcular(expresion_postfija);
-                }
-                    
+                    calcular(expresion_postfija);
+                } 
                 else{
                     memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
                 }
