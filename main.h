@@ -19,3 +19,4 @@ int is_operator(char c);
 int comparar(char top, char operando_expresion);
 void limpiar_pantalla();
 char *log_or_trigo(char *str);
+void imprimir_digitos_significativos(double numero);

@@ -195,8 +195,14 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
   while (*expresion_infija != '\0')
   {
     // si es un operando copia el operando al buffer o si es un numero con coma
-    while (*expresion_infija >= '0' && *expresion_infija <= '9' || *expresion_infija == '.')
-    {                                                             // si es un operando
+    while (*expresion_infija >= '0' && *expresion_infija <= '9' || *expresion_infija == '.'){ // si es un operando o punto decimal
+      
+      char *temp_expresion_infija = expresion_infija + 1;//puntero temporal para comparar
+      if (*expresion_infija== '.' && *temp_expresion_infija == '.') {//si hay dos puntos consecutivos
+        static char error[] = "ERROR1\0";
+        return error;
+      }
+  
       buffer_postfija[contador_postfijo++] = *expresion_infija++; // se guarda en el buffer
     }                                                             // fin if
 
@@ -223,9 +229,14 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
     }              // fin else 
 
-    else if (is_operator(*expresion_infija))
-    { // si es operador algebraico
+    else if (is_operator(*expresion_infija)){ // si es operador algebraico
 
+      char *temp_expresion_infija = expresion_infija + 1; // puntero temporal para comparar
+      if (*expresion_infija == '/' && *temp_expresion_infija == '0'){// si es una división por cero
+        static char error[] = "ERROR2\0";
+        return error;
+      }
+      
       if (emptyS(p) && *expresion_infija != '\0')
       {                                // si la pila esta vacia
         insertS(&p, expresion_infija); // meter el primer operador a la pila
@@ -236,8 +247,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
         // mientras la pila no esté vacía
         // y el operador leído sea de menor o igual precedencia que el tope de la pila
-        while (!emptyS(p) && !(comparar(top(p), *expresion_infija)))
-        {
+        while (!emptyS(p) && !(comparar(top(p), *expresion_infija))){
           // sacar el tope de la pila y volver a comparar el operador leido
           buffer_postfija[contador_postfijo++] = removeS(&p);
           buffer_postfija[contador_postfijo++] = ' ';
@@ -299,12 +309,12 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 double calcular(char *expresion_postfija)
 {
   double operandos[strlen(expresion_postfija)]; // lista de operandos
-  operandos[strlen(expresion_postfija)] = '\0';//inicializar la pila vacía
+  operandos[strlen(expresion_postfija)] = '\0'; //inicializar la pila vacía
   int b; // bandera para saber si hay un numero negativo
   int i = 0; // contador de operandos
   char *eValue; // puntero que apunta al valor de la expresión
   eValue = strtok(expresion_postfija, " "); // apunta al primer valor de la expresion postfija
-  /* strtok() coloca un NULL despues de la primera palabra, seguido del NULL le sigue la siguiente palabra que viene despues de la primera palabra  */
+  /* strtok() coloca un NULL despues de la primera palabra, seguido del NULL le sigue la siguiente palabra despues de la primera */
 
   while (eValue != NULL ) // eValue no es NULL
   {
@@ -354,13 +364,33 @@ double calcular(char *expresion_postfija)
       default:
         break;
       }
-      // si no se ingreso un numero negativo
+
+      // si no se ingresó un numero negativo
       if(b != 1){
         i = i - 1; // el indice se ubica despues del ultimo valor para poder ingresar en esa posicion el nuevo elemento
       }
+
     }
     eValue = strtok(NULL, " "); //avanzamos el puntero al siguiente valor de expresion postfija
     /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
   }
   return operandos[0];
+}
+
+void imprimir_digitos_significativos(double numero){
+    int precision = 14;  // precisión máxima de los números
+
+    // convertir número a cadena para sacar los ceros a la derecha
+    char formato_impresion[36]; // Buffer para la cadena en formato_impresion
+    int significativos = snprintf(NULL, 0, "%.14g", numero);
+    if (significativos >= precision) {
+        precision = significativos; // actualizar la precisión de impresión
+    }
+
+    // crear el formato_impresion con la precision correcta
+    snprintf(formato_impresion, sizeof(formato_impresion), "El resultado es: %%.%dg\n", precision);
+    //%% imprime un símbolo de porcentaje literal y %.%dg es un formato para imprimir un número de punto flotante con una precisión dinámica
+    
+    // imprimir el numero con la precision correcta
+    printf(formato_impresion, numero);
 }

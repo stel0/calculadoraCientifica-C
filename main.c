@@ -47,11 +47,10 @@ int main()
             limpiar_pantalla();  // limpiar terminal para no tener operaciones acumuladas
             printf("Ingrese la expresión infija: ");
             scanf("%255s", expresion_infija); //limite de 255 caracteres
-            // Controlar sintaxis válida de la expresión
             break;
         case 2:
-            // Realiza la conversión y cálculo si se ha ingresado una expresión correcta
             limpiar_pantalla(); // limpiar terminal para no tener operaciones acumuladas
+            // Realiza la conversión y cálculo si se ha ingresado una expresión correcta
             if (strlen(expresion_infija) != 0)
             {
                 char *response = convertir_a_postfija(expresion_infija, expresion_postfija);
@@ -66,10 +65,10 @@ int main()
                 }
                 else if (response != NULL ){
                     result = calcular(expresion_postfija);
-                    if (result)
-                    {
-                        printf("El resultado es: %.14lf\n", result); // imprime el resultado
-                    }else{
+                    if (result){
+                        imprimir_digitos_significativos(result); // imprime el resultado
+                    }
+                    else{
                         printf("\n\nError de cálculo\n\n");
                         memset(expresion_postfija, '\0', SIZE); // vaciar la cadena
                     }
@@ -126,3 +125,4 @@ int main()
 
     return 0;
 }
+
