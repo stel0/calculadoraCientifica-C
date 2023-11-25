@@ -201,7 +201,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
       if (*expresion_infija== '.' && *temp_expresion_infija == '.') {//si hay dos puntos consecutivos
         static char error[] = "ERROR1\0";
         return error;
-      }
+      } 
   
       buffer_postfija[contador_postfijo++] = *expresion_infija++; // se guarda en el buffer
     }                                                             // fin if
@@ -235,7 +235,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
       if (*expresion_infija == '/' && *temp_expresion_infija == '0'){// si es una división por cero
         static char error[] = "ERROR2\0";
         return error;
-      }
+      } 
       
       if (emptyS(p) && *expresion_infija != '\0')
       {                                // si la pila esta vacia
@@ -284,6 +284,11 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
       {
         expresion_infija++; // avanzamos el puntero de expresion infija hasta el final de sen(), cos(), tan(), ln() o log()
       }
+    }
+
+    else{
+        static char error[] = "ERROR1\0";
+        return error;
     }
     *expresion_infija++; // avanzar la expresión
   }                      // fin while
