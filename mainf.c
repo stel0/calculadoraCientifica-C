@@ -194,6 +194,7 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
 
   while (*expresion_infija != '\0')
   {
+
     // si es un operando copia el operando al buffer o si es un numero con coma
     while (*expresion_infija >= '0' && *expresion_infija <= '9' || *expresion_infija == '.'){ // si es un operando o punto decimal
       
@@ -236,6 +237,11 @@ char *convertir_a_postfija(char *expresion_infija, char *buffer_postfija)
         static char error[] = "ERROR2\0";
         return error;
       } 
+
+      else if (*(expresion_infija+1) == '\0'){
+      static char error[] = "ERROR1\0";
+      return error;
+    }
       
       if (emptyS(p) && *expresion_infija != '\0')
       {                                // si la pila esta vacia
@@ -379,6 +385,7 @@ double calcular(char *expresion_postfija)
     eValue = strtok(NULL, " "); //avanzamos el puntero al siguiente valor de expresion postfija
     /* strtok(NULL," ") busca la siguiente palabra en este caso al final de la primera palabra */
   }
+
   return operandos[0];
 }
 
