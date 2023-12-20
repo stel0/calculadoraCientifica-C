@@ -45,7 +45,7 @@ int main()
         {
         case 1:
             limpiar_pantalla();  // limpiar terminal para no tener operaciones acumuladas
-            printf("Ingrese la expresión infija: ");
+            printf("Ingrese la expresión: ");
             scanf("%255s", expresion_infija); //limite de 255 caracteres
             break;
         case 2:
