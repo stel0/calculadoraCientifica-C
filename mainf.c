@@ -44,6 +44,11 @@ char *log_or_trigo(char *str)
   {
     //(res*10) define el orden del entero a convertir
     //(*str - '0') convierte un caracter numérico ASCII a un entero
+    if (is_operator(*str)){
+      static char error[] = "ERROR1\0";
+      return error;
+    }
+    
     res = (res * 10) + (*str - '0');
     str++;
     if (*str == '('){
